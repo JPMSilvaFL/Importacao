@@ -7,6 +7,7 @@ using Importacao.Application.Services;
 using Importacao.Infrastructure.Interfaces;
 using Importacao.Infrastructure.Repository;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -53,6 +54,11 @@ void ConfigureServices(WebApplicationBuilder builderServices) {
 				// policy.AllowAnyHeader(); // Permite todos os headers (não recomendado para produção)
 				policy.AllowCredentials(); // Permite credenciais (cookies, autenticação)
 			});
+	});
+
+	builder.WebHost.ConfigureKestrel((context, options) =>
+	{
+		options.Configure(context.Configuration.GetSection("Kestrel"));
 	});
 
 	builderServices.Services.AddEndpointsApiExplorer();
