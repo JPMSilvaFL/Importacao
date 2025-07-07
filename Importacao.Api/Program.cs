@@ -4,6 +4,7 @@ using Importacao.Api.Middlewares;
 using Importacao.Application;
 using Importacao.Application.Interfaces;
 using Importacao.Application.Services;
+using Importacao.Domain.Interfaces;
 using Importacao.Infrastructure.Interfaces;
 using Importacao.Infrastructure.Repository;
 using Microsoft.AspNetCore.Builder;
@@ -65,10 +66,14 @@ void ConfigureServices(WebApplicationBuilder builderServices) {
 	builderServices.Services.AddSwaggerGen();
 
 	builderServices.Services.AddScoped<IPersonService, PersonService>();
+	builderServices.Services.AddScoped<IEmployeeService, EmployeeService>();
+	builderServices.Services.AddScoped<IMidiaAcessoService, MidiaAcessoService>();
 
-	builder.Services.AddTransient<IDbConnection>(sp => new SqlConnection(connectionString));
+	builderServices.Services.AddTransient<IDbConnection>(sp => new SqlConnection(connectionString));
 
 	builderServices.Services.AddScoped<IPersonRepository, PersonRepository>();
+	builderServices.Services.AddScoped<IMidiaAcessoRepository, MidiaAcessoRepository>();
+	builderServices.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
 }
 
 

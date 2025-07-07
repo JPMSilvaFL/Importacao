@@ -1,6 +1,5 @@
 ﻿using System.Text.Json.Serialization;
 using Importacao.Application.Services;
-using Importacao.Domain.Entities.Profiles;
 
 namespace Importacao.Application.DTOs;
 
@@ -13,4 +12,7 @@ public class PersonDto {
 
 	[JsonConverter(typeof(DocumentConverter))]
 	public string Documento { get; set; }
+	[JsonConverter(typeof(DocumentConverter))]
+	public string Matricula { get; private set; }
+	public long GrupoId { get; private set; }
 }

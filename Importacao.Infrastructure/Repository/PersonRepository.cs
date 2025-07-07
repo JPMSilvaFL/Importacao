@@ -26,6 +26,21 @@ public class PersonRepository : IPersonRepository {
 		});
 	}
 
+	public async Task<Person> InsertAndGetPerson(Person person) {
+		var sql = @"INSERT INTO Pessoa 
+				(Documento, Nome, NomeFormatado, DataHoraCadastro)
+output INSERTED.*
+				VALUES (@Documento, @Nome, @NomeFormatado, @DataHoraCadastro)";
+
+		var result = await _dbConnection.QuerySingleAsync(sql, new {
+			Documento = person.Documento.Cpf,
+			Nome = person.Nome,
+			NomeFormatado = person.Nome,
+			DataHoraCadastro = DateTime.Now
+		});
+		return new Person(result.Id, result.Nome, result.Documento);
+	}
+
 
 	public async Task<Person?> GetByDocument(string document) {
 		var sql = $"SELECT Id, Nome, Documento FROM Pessoa WHERE Documento = @document";
