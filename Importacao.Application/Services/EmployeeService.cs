@@ -20,12 +20,24 @@ public class EmployeeService : IEmployeeService {
 		var employees = new List<Employee>();
 		foreach (var person in model.Persons) persons.Add(new Person(person.Nome, new Document(person.Documento), person.GrupoId, person.Matricula));
 		for (var i = persons.Count - 1; i >= 0; i--) {
-			var midia = await _midiaAcessoService.HandleCreateMidiaAcesso(persons[i].EmpresaId);
+			var midia = await _midiaAcessoService.HandleCreateMidiaAcesso(persons[i].GrupoId);
 			var person = await _personService.HandleVerifyPerson(persons[i]);
-			var employee = await _employeeRepository.CreateEmployee(person.Id, person.EmpresaId, person.Matricula, midia.Id);
+			var employee = await HandleVerifyEmployee(persons[i].Documento.Cpf);
+			if (employee == null) {
+				employee = await HandleInsertEmployee(person.Id, persons[i].GrupoId, persons[i].Matricula, midia.Id);
+				employees.Add(employee);
+			}
 			employees.Add(employee);
 		}
-
 		return employees;
+	}
+
+	public async Task<Employee?> HandleVerifyEmployee(string personDocument) {
+		var employeeDb = await _employeeRepository.GetEmployeeByDocument(personDocument);
+		return employeeDb;
+	}
+
+	public async Task<Employee> HandleInsertEmployee(long personId, long grupoId, string matricula, long midiaId) {
+		return await _employeeRepository.CreateEmployee(personId, grupoId, matricula, midiaId);
 	}
  }

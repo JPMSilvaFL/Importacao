@@ -31,4 +31,14 @@ Output Inserted.*
 		});
 		return new Employee(result.Id, result.PessoaId, result.Matricula, result.MidiaAcessoId, result.GrupoId);
 	}
+
+	public async Task<Employee?> GetEmployeeByDocument(string document) {
+		var sql = @"Select * from Funcionario f left join Pessoa p on p.Id = f.PessoaId where p.Documento = @Documento";
+		var result = await _dbConnection.QuerySingleOrDefaultAsync(sql, new {
+			Documento = document
+		});
+		if (result == null)
+			return result;
+		return new Employee(result.Id, result.PessoaId, result.Matricula, result.MidiaAcessoId, result.GrupoId);
+	}
 }
