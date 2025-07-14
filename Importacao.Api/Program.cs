@@ -5,7 +5,6 @@ using Importacao.Application;
 using Importacao.Application.Interfaces;
 using Importacao.Application.Services;
 using Importacao.Domain.Interfaces;
-using Importacao.Infrastructure.Interfaces;
 using Importacao.Infrastructure.Repository;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;

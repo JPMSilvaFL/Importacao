@@ -1,8 +1,8 @@
 ﻿using Importacao.Application.DTOs;
 using Importacao.Application.Interfaces;
 using Importacao.Domain.Entities.Profiles;
+using Importacao.Domain.Interfaces;
 using Importacao.Domain.ValueObject;
-using Importacao.Infrastructure.Interfaces;
 
 namespace Importacao.Application.Services;
 
@@ -17,20 +17,21 @@ public class PersonService : IPersonService {
 		var persons = new List<Person>();
 		foreach (var person in model.Persons) persons.Add(new Person(person.Nome, new Document(person.Documento), person.GrupoId, person.Matricula));
 		for (var i = persons.Count - 1; i >= 0; i--) {
-			var personDb = await _personRepository.GetByDocument(persons[i].Documento.Cpf);
-			if (!persons[i].IsValid || (personDb != null && personDb.Documento.Cpf == persons[i].Documento.Cpf)) {
-				persons.RemoveAt(i);
+			if (persons[i].Documento != null) {
+				var personDb = await _personRepository.GetByDocument(persons[i].Documento);
+				if (persons[i].IsValid == false && persons[i].Documento != null  || (personDb != null && personDb.Documento == persons[i].Documento)) {
+					persons.RemoveAt(i);
+				}
 			}
 		}
 		return persons;
 	}
 
 	public async Task<Person> HandleVerifyPerson(Person person) {
-		var personDb = await _personRepository.GetByDocument(person.Documento.Cpf);
-		if (personDb != null && personDb.Documento.Cpf == person.Documento.Cpf) {
-			return personDb;
-		}
-		return await HandleInsertPerson(person);
+		var personDb = await _personRepository.GetByDocument(person.Documento);
+		if (personDb == null || person.Documento == null) return await HandleInsertPerson(person);
+		await _personRepository.UpdateName(person.Documento, person.Nome);
+		return personDb;
 	}
 
 	public async Task HandleInsertPersons(List<Person> persons) {
